@@ -2,7 +2,12 @@ import React from 'react'
 
 export default function TinyCard({title, timeframes, image, bgColor}: {title: string, timeframes: any, image: string, bgColor: string}) {
     return (
-        <div className={`bg-[${bgColor}] w-56 h-[12rem] mt-[0.5rem] mb-[0.5rem] ml-[1rem] rounded-xl bg-[url("/images/icon-${image}.svg")] bg-no-repeat bg-right-top`}>
+        <div className={`w-56 h-[12rem] mt-[0.5rem] mb-[0.5rem] ml-[1rem] rounded-xl bg-no-repeat bg-right-top`}
+        style={{
+            backgroundImage: `url("/images/icon-${image}.png")`,
+            backgroundColor: `${bgColor}`
+        }}
+        >
             <div className='bg-[#34397b] w-56 h-[10rem] rounded-xl mt-[2rem] '>
                 <div className='flex flex-row items-left justify-between pt-5 px-5 rounded-full'>
                     <span className='text-white text-md mt-1'>{title}</span>

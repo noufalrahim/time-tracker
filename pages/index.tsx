@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import TinyCard from '../components/TinyCard'
 import Card from '../components/Card'
@@ -124,7 +125,6 @@ const data = [
 
 export default function Home() {
   const [time, setTime] = React.useState('');
-
   useEffect(() => {
     setTime('Daily')
   }, [])
