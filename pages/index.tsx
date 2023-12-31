@@ -111,7 +111,7 @@ export default function Home(props: any) {
 
 export async function getStaticProps({params}:{params: any}) {
   console.log(params);
-  const client = await MongoClient.connect('mongodb+srv://projectmail0444:noufalrahim@cluster0.o60sual.mongodb.net/Database?retryWrites=true&w=majority');
+  const client = await MongoClient.connect(process.env.MONGODB_URI!);
   const db = client.db();
   const Collection = db.collection('Time');
   const query = { username:  'testuser'};

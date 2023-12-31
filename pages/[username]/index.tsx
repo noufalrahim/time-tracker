@@ -125,32 +125,10 @@ export default function Home(props: any) {
 }
 
 
-// export async function getStaticProps({params}:{params: any}) {
-//   console.log(params);
-//   const client = await MongoClient.connect('mongodb+srv://projectmail0444:noufalrahim@cluster0.o60sual.mongodb.net/Database?retryWrites=true&w=majority');
-//   const db = client.db();
-//   const Collection = db.collection('Time');
-//   const query = { username:  'johndoe'};
-//   const data = await Collection.find(query).toArray();
-
-//   return {
-//     props: {
-//       data: data.map((data: any) => ({
-//         title: data.title,
-//         timeframes: data.timeframes,
-//         image: data.image,
-//         bgColor: data.bgColor,
-//         id: data._id.toString()
-//       }))
-//     },
-//     revalidate: 1,
-//     }
-// }
-
 export async function getServerSideProps(context: any) {
     const username = context.params.username;
 
-    const client = await MongoClient.connect('mongodb+srv://projectmail0444:noufalrahim@cluster0.o60sual.mongodb.net/Database?retryWrites=true&w=majority');
+    const client = await MongoClient.connect(process.env.MONGODB_URI!);
     const db = client.db();
     const Collection = db.collection('Time');
     var query = { username:  username || 'testuser'};
