@@ -1,20 +1,36 @@
 import { Inter } from 'next/font/google'
-import TinyCard from '../components/TinyCard'
-import Card from '../components/Card'
+import TinyCard from '../../components/TinyCard'
+import Card from '../../components/Card'
 import Navbar from '@/components/Navbar'
 import React, { useEffect } from 'react'
 import { MongoClient } from 'mongodb'
+import { useRouter } from 'next/router'
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home(props: any) {
 
-  
-
   const [time, setTime] = React.useState('');
   const [data, setData] = React.useState([]);
+  const [userData, setUserData] = React.useState<any>({});
+  const router = useRouter();
+
+  const auth = router.query.auth;
+  var isAuthenticated = false;
+
+  if (auth === 'true') {
+    isAuthenticated = true;
+  } else {
+    isAuthenticated = false;
+  }
 
   useEffect(() => {
-    setData(props.data)
+    setData(props.data);
+    if(props.userData != undefined) {
+      setUserData(props.userData);
+    }
+    else{
+      setUserData({name: 'Jeremy Robson', image: 'https://iili.io/JRDJmkg.png'});
+    }
     setTime('Daily');
   }, [])
 
@@ -26,11 +42,11 @@ export default function Home(props: any) {
   return (
     <>
     <div className='fixed top-0 w-full z-50 h-16'>
-    <Navbar isAuthenticated={false} />
+    <Navbar isAuthenticated={isAuthenticated}/>
     </div>
     <main className={`flex-row min-h-screen flex-col bg-[#0D1323] items-center justify-center px-56 py-32 ${inter.className}`}>
       <div className="lg:flex lg:flex-row md:flex md:flex-row xl:flex 2xl:flex-row flex flex-col items-center justify-center">
-        <Card onChangeTime={handleTime} name='Jeremy Robson' image='https://iili.io/JRDJmkg.png'/>
+        <Card onChangeTime={handleTime} name={userData?.name} image={userData?.image} />
         <div className='flex flex-col items-center justify-center'>
           <div className='lg:flex lg:flex-row md:flex md:flex-row xl:flex 2xl:flex-row flex flex-col items-center justify-center'>
             {
@@ -109,25 +125,63 @@ export default function Home(props: any) {
 }
 
 
-export async function getStaticProps({params}:{params: any}) {
-  console.log(params);
-  const client = await MongoClient.connect('mongodb+srv://projectmail0444:noufalrahim@cluster0.o60sual.mongodb.net/Database?retryWrites=true&w=majority');
-  const db = client.db();
-  const Collection = db.collection('Time');
-  const query = { username:  'testuser'};
-  const data = await Collection.find(query).toArray();
+// export async function getStaticProps({params}:{params: any}) {
+//   console.log(params);
+//   const client = await MongoClient.connect('mongodb+srv://projectmail0444:noufalrahim@cluster0.o60sual.mongodb.net/Database?retryWrites=true&w=majority');
+//   const db = client.db();
+//   const Collection = db.collection('Time');
+//   const query = { username:  'johndoe'};
+//   const data = await Collection.find(query).toArray();
 
-  return {
-    props: {
-      data: data.map((data: any) => ({
-        title: data.title,
-        timeframes: data.timeframes,
-        image: data.image,
-        bgColor: data.bgColor,
-        id: data._id.toString()
-      }))
-    },
-    revalidate: 1,
+//   return {
+//     props: {
+//       data: data.map((data: any) => ({
+//         title: data.title,
+//         timeframes: data.timeframes,
+//         image: data.image,
+//         bgColor: data.bgColor,
+//         id: data._id.toString()
+//       }))
+//     },
+//     revalidate: 1,
+//     }
+// }
+
+export async function getServerSideProps(context: any) {
+    const username = context.params.username;
+
+    const client = await MongoClient.connect('mongodb+srv://projectmail0444:noufalrahim@cluster0.o60sual.mongodb.net/Database?retryWrites=true&w=majority');
+    const db = client.db();
+    const Collection = db.collection('Time');
+    var query = { username:  username || 'testuser'};
+    var data = await Collection.find(query).toArray();
+
+    const userCollection = db.collection('User');
+    var userQuery = { username:  username || 'testuser'};
+    var userData = await userCollection.findOne(userQuery);
+    
+    if(!userData) {
+      query = { username:  'testuser'};
+      data = await Collection.find(query).toArray();
+      userQuery = { username:  'testuser'};
+      userData = await userCollection.findOne(userQuery);
     }
-}
 
+    
+    return {
+        props: {
+        data: data.map((data: any) => ({
+            title: data.title,
+            timeframes: data.timeframes,
+            image: data.image,
+            bgColor: data.bgColor,
+            id: data._id.toString()
+        })),
+        userData: {
+            name: userData?.name,
+            image: userData?.image,
+            username: userData?.username,
+        },
+    }
+  }
+}

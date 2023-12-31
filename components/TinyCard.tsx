@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function TinyCard({title, timeframes, image, bgColor}: {title: string, timeframes: any, image: string, bgColor: string}) {
     return (
-        <div className={`w-56 h-[12rem] mt-[0.5rem] mb-[0.5rem] ml-[1rem] rounded-xl bg-no-repeat bg-right-top`}
+        <div className={`w-56 h-[12rem] mt-[1rem] mb-[1rem] mx-[1rem] rounded-xl bg-no-repeat bg-right-top`}
         style={{
             backgroundImage: `url("/images/icon-${image}.png")`,
             backgroundColor: `${bgColor}`
