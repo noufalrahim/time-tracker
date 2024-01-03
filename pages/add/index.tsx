@@ -5,7 +5,7 @@ import { useRef } from 'react'
 import { useRouter } from 'next/router'
 export default function () {
 
-  const router = useRouter()
+  const router = useRouter();
   const username = router.query.username
   const code = router.query.code
 
@@ -288,7 +288,7 @@ export default function () {
       <div className='fixed top-0 w-full z-50 h-16'>
         <Navbar isAuthenticated={true} />
       </div>
-      <main className='bg-[#0D1323] min-h-screen text-center justify-center w-[30rem] pt-10'>
+      <main className='bg-[#0D1323] min-h-screen text-center justify-center w-[30rem] md:w-full lg:w-full xl:w-full 2xl:w-full pt-10'>
         <form onSubmit={submitHandler}>
           <div className='w-1/5 justify-center mx-auto mt-[3rem] mb-[5rem]'>
             <div className='flex flex-col items-center justify-center'>
