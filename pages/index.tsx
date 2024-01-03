@@ -12,6 +12,8 @@ export default function Home(props: any) {
 
   const [time, setTime] = React.useState('');
   const [data, setData] = React.useState([]);
+  
+
 
   useEffect(() => {
     setData(props.data)

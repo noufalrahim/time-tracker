@@ -2,8 +2,12 @@ import React from 'react'
 import Navbar from '../../components/Navbar'
 import TinyInputBox from '@/components/TinyInputBox'
 import { useRef } from 'react'
-
+import { useRouter } from 'next/router'
 export default function () {
+
+  const router = useRouter()
+  const username = router.query.username
+  const code = router.query.code
 
   const currentDailyWorkUseRef = useRef<HTMLInputElement>(null)
   const currentDailyPlayUseRef = useRef<HTMLInputElement>(null)
@@ -48,6 +52,32 @@ export default function () {
   const prevMonthlySelfCareUseRef = useRef<HTMLInputElement>(null)
 
   const nameInputRef = useRef<HTMLInputElement>(null)
+  const [isNameValid, setIsNameValid] = React.useState(false);
+
+  const [imageInput, setImageInput] = React.useState("");
+
+
+  async function ImageHandler(event: any) {
+    const [file] = event.target.files;
+
+    if (file) {
+      const base64 = await convertToBase64(file);
+      setImageInput(base64 as string);
+    }
+  }
+
+  function convertToBase64(file: any) {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result)
+      };
+      fileReader.onerror = (error) => {
+        reject(error)
+      }
+    })
+  }
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -96,6 +126,7 @@ export default function () {
 
     const name = nameInputRef.current?.value
 
+    console.log(imageInput);
     const data = [
       {
         title: 'Work',
@@ -115,7 +146,7 @@ export default function () {
         },
         image: 'work',
         bgColor: '#ff8a5c',
-        username: name,
+        username: username,
       },
       {
         title: 'Play',
@@ -135,7 +166,7 @@ export default function () {
         },
         image: 'play',
         bgColor: '#56c2e6',
-        username: name,
+        username: username,
       },
       {
         title: 'Study',
@@ -155,7 +186,7 @@ export default function () {
         },
         image: 'study',
         bgColor: '#ff5c7c',
-        username: name,
+        username: username,
       },
       {
         title: 'Exercise',
@@ -175,7 +206,7 @@ export default function () {
         },
         image: 'exercise',
         bgColor: '#4acf8a',
-        username: name,
+        username: username,
       },
       {
         title: 'Social',
@@ -195,7 +226,7 @@ export default function () {
         },
         image: 'social',
         bgColor: '#7135d1',
-        username: name,
+        username: username,
       },
       {
         title: 'Self Care',
@@ -215,7 +246,7 @@ export default function () {
         },
         image: 'self-care',
         bgColor: '#f1c65b',
-        username: name,
+        username: username,
       }
     ]
 
@@ -229,14 +260,35 @@ export default function () {
 
     const responseData = await response.json()
     console.log(responseData);
+
+
+    const userData = {
+      username: username,
+      password: code,
+      name: name,
+      image: imageInput
+    }
+
+    const resp = await fetch('/api/registerUser', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    })
+
+    const responseFromServer = await resp.json()
+    console.log(responseFromServer);
+
   }
+
 
   return (
     <>
-    <div className='fixed top-0 w-full z-50 h-16'>
-      <Navbar isAuthenticated={true} />
+      <div className='fixed top-0 w-full z-50 h-16'>
+        <Navbar isAuthenticated={true} />
       </div>
-      <main className='bg-[#0D1323] min-h-screen text-center justify-center pt-10'>
+      <main className='bg-[#0D1323] min-h-screen text-center justify-center w-[30rem] pt-10'>
         <form onSubmit={submitHandler}>
           <div className='w-1/5 justify-center mx-auto mt-[3rem] mb-[5rem]'>
             <div className='flex flex-col items-center justify-center'>
@@ -244,14 +296,17 @@ export default function () {
                 Upload Your Photo
                 <input
                   type="file"
-                  accept=".customdata"
+                  accept=".jpg, .png, .jpeg"
                   className="hidden"
+                  onChange={event => ImageHandler(event)}
+                  src={imageInput ? imageInput : "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Color_icon_Light_Cornflower_blue.svg/1024px-Color_icon_Light_Cornflower_blue.svg.png"}
                 />
+
               </label>
             </div>
             <div>
-              <input className='bg-[#F5F5F5] mt-10 text-[#0D1323] rounded-md py-2 text-center justify-center text-[1rem] border-[#F5F5F5] border-2 w-full' type='text' placeholder='Name' 
-              ref={nameInputRef}
+              <input className='bg-[#F5F5F5] mt-10 text-[#0D1323] rounded-md py-2 text-center justify-center text-[1rem] border-[#F5F5F5] border-2 w-full' type='text' placeholder='Name'
+                ref={nameInputRef}
               />
             </div>
           </div>
@@ -259,18 +314,18 @@ export default function () {
             <div>
               <h1 className='text-[#F5F5F5] text-[2rem] font-bold'>DAILY</h1>
               <div className='lg:flex lg:flex-row lg:justify-around lg:w-full lg:mx-auto lg:gap-96 hidden'>
-                <h3 className='text-[#F5F5F5] text-[1rem] font-bold'>
+                <h3 className='text-[#F5F5F5] text-[1rem] font-bold lg:hidden md:hidden xl:hidden 2xl:hidden'>
                   PREVIOUS
                 </h3>
-                <h3 className='text-[#F5F5F5] text-[1rem] font-bold ml-10'>
+                <h3 className='text-[#F5F5F5] text-[1rem] font-bold ml-10 lg:hidden md:hidden xl:hidden 2xl:hidden'>
                   CURRENT
                 </h3>
               </div>
               <div className='lg:flex lg:flex-row md:flex md:flex-row xl:flex 2xl:flex-row flex flex-col justify-center'>
-                <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
-                  PREVIOUS
-                </h1>
                 <div className='lg:border-r-4 lg:border-white/50 lg:border-dashed md:border-r-4 md:border-white/50 md:border-dashed xl:border-r-4 xl:border-white/50 xl:border-dashed 2xl:border-r-4 2xl:border-white/50 2xl:border-dashed'>
+                  <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
+                    PREVIOUS
+                  </h1>
                   <div className='flex flex-row justify-center'>
                     <TinyInputBox placeholder={`WORK`} name={'work'} type={'number'} ref={prevDailyWorkUseRef} borderColor='#ff8a5c' />
                     <TinyInputBox placeholder={'PLAY'} name={'play'} type={'number'} ref={prevDailyPlayUseRef} borderColor='#56c2e6' />
@@ -283,9 +338,9 @@ export default function () {
                   </div>
                 </div>
                 <div>
-                <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
-                  CURRENT
-                </h1>
+                  <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
+                    CURRENT
+                  </h1>
                   <div className='flex flex-row justify-center'>
                     <TinyInputBox placeholder={`WORK`} name={'work'} type={'number'} ref={currentDailyWorkUseRef} borderColor='#ff8a5c' />
                     <TinyInputBox placeholder={'PLAY'} name={'play'} type={'number'} ref={currentDailyPlayUseRef} borderColor='#56c2e6' />
@@ -302,18 +357,18 @@ export default function () {
             <div className='mt-[3rem]'>
               <h1 className='text-[#F5F5F5] text-[2rem] font-bold'>WEEKLY</h1>
               <div className='lg:flex lg:flex-row lg:justify-around lg:w-full lg:mx-auto lg:gap-96 hidden'>
-                <h3 className='text-[#F5F5F5] text-[1rem] font-bold'>
-                  CURRENT
-                </h3>
-                <h3 className='text-[#F5F5F5] text-[1rem] font-bold ml-10'>
+                <h3 className='text-[#F5F5F5] text-[1rem] font-bold lg:hidden md:hidden xl:hidden 2xl:hidden'>
                   PREVIOUS
+                </h3>
+                <h3 className='text-[#F5F5F5] text-[1rem] font-bold ml-10 lg:hidden md:hidden xl:hidden 2xl:hidden'>
+                  CURRENT
                 </h3>
               </div>
               <div className='lg:flex lg:flex-row md:flex md:flex-row xl:flex 2xl:flex-row flex flex-col justify-center'>
                 <div className='lg:border-r-4 lg:border-white/50 lg:border-dashed md:border-r-4 md:border-white/50 md:border-dashed xl:border-r-4 xl:border-white/50 xl:border-dashed 2xl:border-r-4 2xl:border-white/50 2xl:border-dashed'>
-                <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
-                  PREVIOUS
-                </h1>
+                  <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
+                    PREVIOUS
+                  </h1>
                   <div className='flex flex-row justify-center '>
                     <TinyInputBox placeholder={'WORK'} name={'work'} type={'number'} ref={prevWeeklyWorkUseRef} borderColor='#ff8a5c' />
                     <TinyInputBox placeholder={'PLAY'} name={'play'} type={'number'} ref={prevWeeklyPlayUseRef} borderColor='#56c2e6' />
@@ -326,9 +381,9 @@ export default function () {
                   </div>
                 </div>
                 <div>
-                <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
-                  CURRENT
-                </h1>
+                  <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
+                    CURRENT
+                  </h1>
                   <div className='flex flex-row justify-center '>
                     <TinyInputBox placeholder={'WORK'} name={'work'} type={'number'} ref={currentWeeklyWorkUseRef} borderColor='#ff8a5c' />
                     <TinyInputBox placeholder={'PLAY'} name={'play'} type={'number'} ref={currentWeeklyPlayUseRef} borderColor='#56c2e6' />
@@ -345,18 +400,18 @@ export default function () {
             <div className='mt-[3rem]'>
               <h1 className='text-[#F5F5F5] text-[2rem] font-bold'>MONTHLY</h1>
               <div className='lg:flex lg:flex-row lg:justify-around lg:w-full lg:mx-auto lg:gap-96 hidden'>
-                <h3 className='text-[#F5F5F5] text-[1rem] font-bold'>
-                  CURRENT
-                </h3>
-                <h3 className='text-[#F5F5F5] text-[1rem] font-bold ml-10'>
+                <h3 className='text-[#F5F5F5] text-[1rem] font-bold lg:hidden md:hidden xl:hidden 2xl:hidden'>
                   PREVIOUS
+                </h3>
+                <h3 className='text-[#F5F5F5] text-[1rem] font-bold ml-10 lg:hidden md:hidden xl:hidden 2xl:hidden'>
+                  CURRENT
                 </h3>
               </div>
               <div className='lg:flex lg:flex-row md:flex md:flex-row xl:flex 2xl:flex-row flex flex-col justify-center'>
                 <div className='lg:border-r-4 lg:border-white/50 lg:border-dashed md:border-r-4 md:border-white/50 md:border-dashed xl:border-r-4 xl:border-white/50 xl:border-dashed 2xl:border-r-4 2xl:border-white/50 2xl:border-dashed'>
-                <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
-                  PREVIOUS
-                </h1>
+                  <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
+                    PREVIOUS
+                  </h1>
                   <div className='flex flex-row justify-center'>
                     <TinyInputBox placeholder={'WORK'} name={'work'} type={'number'} ref={prevMonthlyWorkUseRef} borderColor='#ff8a5c' />
                     <TinyInputBox placeholder={'PLAY'} name={'play'} type={'number'} ref={prevMonthlyPlayUseRef} borderColor='#56c2e6' />
@@ -369,9 +424,9 @@ export default function () {
                   </div>
                 </div>
                 <div>
-                <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
-                  CURRENT
-                </h1>
+                  <h1 className='text-[#F5F5F5] text-[1rem] font-bold mt-10'>
+                    CURRENT
+                  </h1>
                   <div className='flex flex-row justify-center'>
                     <TinyInputBox placeholder={'WORK'} name={'work'} type={'number'} ref={currentMonthlyWorkUseRef} borderColor='#ff8a5c' />
                     <TinyInputBox placeholder={'PLAY'} name={'play'} type={'number'} ref={currentMonthlyPlayUseRef} borderColor='#56c2e6' />

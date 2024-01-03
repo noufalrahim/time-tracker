@@ -18,34 +18,14 @@ export default function () {
       alert('Password does not match');
       return;
     }else{
-      const data = {
-        username : username,
-        password : password
-      }
-
-      const response = await fetch('/api/registerUser', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data),
-      })
-
-      const res = await response.json();
-      console.log(res.message);
-      if(res.message === 'success'){
-        router.push('/add');
-      }
-      else{
-        alert('Username already exists');
-      }
+      router.push('/add?username=' + username + '&code=' + password);
     }
   }
 
   return (
     <>
     <Navbar isAuthenticated={false}/>
-    <div className='bg-[#0D1323] min-h-screen text-center justify-center'>
+    <div className='bg-[#0D1323] min-h-screen text-center justify-center pb-20'>
         <div className='text-white text-5xl pt-32'>
             <h1>Register</h1>
         </div>
