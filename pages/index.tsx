@@ -27,7 +27,7 @@ export default function Home(props: any) {
 
   return (
     <>
-    <div className='fixed top-0 w-full z-50 h-16'>
+    <div className='fixed top-0 w-full z-30 h-16'>
     <Navbar isAuthenticated={false} />
     </div>
     <main className={`flex-row min-h-screen flex-col bg-[#0D1323] items-center justify-center px-56 py-32 ${inter.className}`}>

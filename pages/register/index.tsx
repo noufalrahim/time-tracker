@@ -1,23 +1,21 @@
 import Navbar from '@/components/Navbar'
-import React from 'react'
+import React, { useState } from 'react'
 import { useRef } from 'react'
 import { useRouter } from 'next/router';
+import Loading from '@/components/Loading'
+import Modal from '@/components/Modal';
 export default function () {
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState({
+    status: false,
+    content: '',
+    title: ''
+  });
   const router = useRouter();
-
-  const key = 'secret';
-  function simpleEncrypt(message:any, key:any) {
-    let encrypted = '';
-    for (let i = 0; i < message.length; i++) {
-      const charCode = message.charCodeAt(i) ^ key.charCodeAt(i % key.length);
-      encrypted += String.fromCharCode(charCode);
-    }
-    return encrypted;
-  }
 
   const submitHandler = async (e: any) => {
     e.preventDefault();
@@ -25,21 +23,62 @@ export default function () {
     const password = passwordRef.current?.value;
     const confirmPassword = confirmPasswordRef.current?.value;
 
+
+    setLoading(true);
+    const response = await fetch('/api/checkUser', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(username),
+    })
+    setLoading(false);
+    const res = await response.json();
+    console.log(res);
+
     if(!username || !password || !confirmPassword) {
-      alert('Please fill in all fields');
+      setShow({
+        status: true,
+        title: 'Invalid Input',
+        content: 'Please Fill all the inputs'
+      })
       return;
     }
 
     if(password !== confirmPassword) {
-      alert('Password does not match');
+      setShow({
+        status: true,
+        title: 'Invalid Password',
+        content: 'Password does not match'
+      })
       return;
     }else{
-      router.push('/add?username=' + username + '&code=' + password);
+      if(res.message == 'success'){
+        router.push('/add?username=' + username + '&code=' + password);
+      }
+      else{
+        setLoading(false);
+        setShow({
+          status: true,
+          title: 'Invalid Username',
+          content: 'Username already exists'
+        })
+      } 
     }
   }
 
   return (
     <>
+    { 
+      show.status && <Modal title={show.title} content={show.content} open={show.status} setOpen={() => setShow({
+        status: false,
+        title: '',
+        content: ''
+      })}/>
+    }
+    {
+      loading && <Loading />
+    }
     <Navbar isAuthenticated={false}/>
     <div className='bg-[#0D1323] min-h-screen text-center justify-center pb-20'>
         <div className='text-white text-5xl pt-32'>
@@ -59,3 +98,4 @@ export default function () {
     </>
   )
 }
+

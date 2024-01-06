@@ -290,12 +290,12 @@ export default function () {
     {
       isLoading && 
       (
-        <div className='z-50 absolute top-1/2 bottom-1/2 left-1/2 right-1/2'>
+        <div className='z-40 absolute top-1/2 bottom-1/2 left-1/2 right-1/2'>
         <Loading />
         </div>
       )
     }
-      <div className='fixed top-0 w-full z-40 h-16'>
+      <div className='fixed top-0 w-full z-30 h-16'>
         <Navbar isAuthenticated={true} />
       </div>
       <main className='bg-[#0D1323] min-h-screen text-center justify-center w-[30rem] md:w-full lg:w-full xl:w-full 2xl:w-full pt-10'>

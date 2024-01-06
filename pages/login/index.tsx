@@ -1,7 +1,7 @@
 import Loading from '@/components/Loading';
 import Navbar from '@/components/Navbar';
-import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
+import Modal from '@/components/Modal';
 import { useRef } from 'react'
 import { useRouter } from 'next/router';
 export default function () {
@@ -11,6 +11,11 @@ export default function () {
     const passwordRef = useRef<HTMLInputElement>(null);
     const [isAuthenticated, setIsAuthenticated] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
+    const [show, setShow] = useState({
+        status: false,
+        title: '',
+        content: ''
+    })
 
 
 
@@ -39,11 +44,22 @@ export default function () {
             router.push(`/${username}?auth=true`);
         }
         else{
-            alert('Wrong username or password');
+            setShow({
+                status: true,
+                title: 'Credentials',
+                content: 'Invalid Username or Password'
+            })
         }
     }
     return (
         <>
+        {
+            show && <Modal title={show.title} content={show.content} open={show.status} setOpen={() => setShow({
+                status: false,
+                title: '',
+                content: ''
+              })}/>
+        }
         {
             loading && <Loading />
         }

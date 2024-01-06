@@ -21,6 +21,9 @@ async function handler(req, res) {
                 console.log("Not Authenticated");
             }
         }
+        else{
+            res.status(201).json({message: 'failed', data: [], status: 201});
+        }
     }
 }
 
