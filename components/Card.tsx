@@ -5,12 +5,12 @@ export default function Card({ onChangeTime, name, image }: { onChangeTime: any,
         <div className='bg-[#1d2145] w-56 h-[26rem] rounded-xl mx-[1rem] my-[1rem]'>
             <div className='bg-[#5746ea] w-56 h-72 rounded-xl'>
                 <div className='flex flex-col items-left justify-left w-20 rounded-full '>
-                    <img className='rounded-full mt-5 ml-5 border-2 border-white' src={image} alt='image' />
+                    <img className='rounded-full mt-5 ml-5 border-2 border-white' src={image ? image : 'https://i.postimg.cc/GtfH38xP/c0749b7cc401421662ae901ec8f9f660-1.jpg'}/>
                     <div className='text-[#9e97f9] text-xs ml-5 mt-8'>
                         <p>Report for</p>
                     </div>
                     <div className='text-white text-2xl ml-5 mt-3'>
-                        <h1>{name}</h1>
+                        <h1>{name ? name : 'Unknown User'}</h1>
                     </div>
                 </div>
             </div>

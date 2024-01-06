@@ -11,8 +11,7 @@ export default function ({ isAuthenticated }: { isAuthenticated: boolean }) {
           {
             isAuthenticated ? (
               <>
-                <a href='/add' className='text-white text-xl'>ADD</a>
-                <a href='/logout' className='text-white text-xl pl-12'>LOGOUT</a>
+                <a href='/' className='text-white text-xl pl-12'>LOGOUT</a>
               </>
             ) : (
               <>

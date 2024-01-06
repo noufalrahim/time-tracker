@@ -3,6 +3,7 @@ import Navbar from '../../components/Navbar'
 import TinyInputBox from '@/components/TinyInputBox'
 import { useRef } from 'react'
 import { useRouter } from 'next/router'
+import Loading from "@/components/Loading"
 export default function () {
 
   const router = useRouter();
@@ -52,7 +53,7 @@ export default function () {
   const prevMonthlySelfCareUseRef = useRef<HTMLInputElement>(null)
 
   const nameInputRef = useRef<HTMLInputElement>(null)
-  const [isNameValid, setIsNameValid] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const [imageInput, setImageInput] = React.useState("");
 
@@ -250,6 +251,7 @@ export default function () {
       }
     ]
 
+    setIsLoading(true);
     const response = await fetch('/api/addItems', {
       method: 'POST',
       headers: {
@@ -260,7 +262,6 @@ export default function () {
 
     const responseData = await response.json()
     console.log(responseData);
-
 
     const userData = {
       username: username,
@@ -279,13 +280,22 @@ export default function () {
 
     const responseFromServer = await resp.json()
     console.log(responseFromServer);
+    setIsLoading(false);
+    router.push(`/${username}?auth=true`);
 
   }
 
-
   return (
     <>
-      <div className='fixed top-0 w-full z-50 h-16'>
+    {
+      isLoading && 
+      (
+        <div className='z-50 absolute top-1/2 bottom-1/2 left-1/2 right-1/2'>
+        <Loading />
+        </div>
+      )
+    }
+      <div className='fixed top-0 w-full z-40 h-16'>
         <Navbar isAuthenticated={true} />
       </div>
       <main className='bg-[#0D1323] min-h-screen text-center justify-center w-[30rem] md:w-full lg:w-full xl:w-full 2xl:w-full pt-10'>

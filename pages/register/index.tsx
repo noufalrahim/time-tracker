@@ -9,11 +9,27 @@ export default function () {
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  const key = 'secret';
+  function simpleEncrypt(message:any, key:any) {
+    let encrypted = '';
+    for (let i = 0; i < message.length; i++) {
+      const charCode = message.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+      encrypted += String.fromCharCode(charCode);
+    }
+    return encrypted;
+  }
+
   const submitHandler = async (e: any) => {
     e.preventDefault();
     const username = usernameRef.current?.value;
     const password = passwordRef.current?.value;
     const confirmPassword = confirmPasswordRef.current?.value;
+
+    if(!username || !password || !confirmPassword) {
+      alert('Please fill in all fields');
+      return;
+    }
+
     if(password !== confirmPassword) {
       alert('Password does not match');
       return;
